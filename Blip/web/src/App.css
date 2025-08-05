@@ -5,21 +5,22 @@
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background: transparent; /* Ensures no color leaks */
+  /* This is now transparent to remove the dark overlay */
+  background: transparent;
 }
 
 /* The main glass effect container */
 .glass-container {
-  width: 800px; /* Adjust width as needed */
-  background: rgba(20, 20, 30, 0.7); /* Dark, semi-transparent background */
+  width: 800px;
+  background: rgba(20, 20, 30, 0.7);
   backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%); /* For Safari */
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   color: #fff;
   padding: 30px;
-  position: relative; /* For positioning the close button */
+  position: relative;
 }
 
 .header-container {
@@ -99,28 +100,45 @@ h2 {
   color: #a9a9a9;
 }
 
-.submit-btn {
+.form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.submit-btn, .cancel-btn, .edit-btn {
   width: 100%;
   padding: 10px;
   border: none;
   border-radius: 4px;
-  background-color: #61dafb;
-  color: #282c34;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
+.submit-btn {
+  background-color: #61dafb;
+  color: #282c34;
+}
+
 .submit-btn:hover {
   background-color: #4a9ec1;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
 }
 
 /* Blip List Styling */
 .blip-list {
   list-style: none;
   padding: 0;
-  max-height: 400px; /* Adjust height as needed */
+  max-height: 400px;
   overflow-y: auto;
 }
 
@@ -154,6 +172,23 @@ h2 {
 .blip-details {
   font-size: 0.9em;
   color: #b0b0b0;
+}
+
+.blip-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.edit-btn {
+  background-color: #ffc107;
+  color: #212529;
+  width: auto;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.edit-btn:hover {
+  background-color: #e0a800;
 }
 
 .delete-btn {

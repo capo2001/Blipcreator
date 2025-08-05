@@ -30,6 +30,7 @@ function DrawBlips()
         local blip = AddBlipForCoord(blipInfo.x, blipInfo.y, blipInfo.z)
         SetBlipSprite(blip, blipInfo.sprite)
         SetBlipColour(blip, blipInfo.color)
+        SetBlipScale(blip, blipInfo.size) -- Set the blip size
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString(blipInfo.name)
@@ -87,8 +88,13 @@ RegisterNUICallback('createBlip', function(data, cb)
     cb({ ok = true })
 end)
 
+RegisterNUICallback('updateBlip', function(data, cb)
+    TriggerServerEvent('capo-blipcreator:server:updateBlip', data)
+    cb({ ok = true })
+end)
+
 RegisterNUICallback('deleteBlip', function(data, cb)
-    if data and data.name then
+    if data and data.id then
         TriggerServerEvent('capo-blipcreator:server:deleteBlip', data)
         cb({ ok = true })
     else

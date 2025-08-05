@@ -6,5 +6,6 @@ CREATE TABLE `blips` (
   `x` float NOT NULL,
   `y` float NOT NULL,
   `z` float NOT NULL,
+  `size` float NOT NULL DEFAULT 1.0,
   PRIMARY KEY (`id`)
 );

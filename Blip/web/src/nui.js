@@ -42,6 +42,12 @@ export const nui = {
   createBlip: (blipData) => post('createBlip', blipData),
 
   /**
+   * Updates an existing blip.
+   * @param {object} blipData - { id, name, sprite, color, size }
+   */
+  updateBlip: (blipData) => post('updateBlip', blipData),
+
+  /**
    * Deletes a blip.
    * @param {number} blipId - The ID of the blip to delete.
    */

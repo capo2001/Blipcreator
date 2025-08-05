@@ -7,70 +7,62 @@ import { nui } from './nui';
 function App() {
   const [blips, setBlips] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [editingBlip, setEditingBlip] = useState(null);
 
   const handleClose = useCallback(() => {
     setVisible(false);
+    setEditingBlip(null); // Clear editing state on close
     nui.close();
   }, []);
 
-  // Main message listener for events from Lua
   useEffect(() => {
     const handleMessage = (event) => {
       const { action, data } = event.data;
-      switch (action) {
-        case 'setVisible':
-          setVisible(data);
-          break;
-        case 'updateBlips':
-          setBlips(data);
-          break;
-        default:
-          break;
-      }
+      if (action === 'setVisible') setVisible(data);
+      if (action === 'updateBlips') setBlips(Array.isArray(data) ? data : []);
     };
-
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  // Key listener for closing the UI
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        handleClose();
-      }
+      if (e.key === 'Escape') handleClose();
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleClose]);
 
-  // Fetch blips when the UI becomes visible
   useEffect(() => {
-    if (visible) {
+    if (visible && !editingBlip) { // Don't refetch if we just opened the editor
       nui.getBlips().then(initialBlips => {
-        // Gracefully handle cases where the blip list isn't an array
-        if (Array.isArray(initialBlips)) {
-          setBlips(initialBlips);
-        } else {
-          // You could optionally set an error state here
-          setBlips([]);
-        }
+        if (Array.isArray(initialBlips)) setBlips(initialBlips);
       });
     }
-  }, [visible]);
+  }, [visible, editingBlip]);
 
   const handleCreateBlip = async (blipData) => {
     await nui.createBlip(blipData);
+  };
+
+  const handleUpdateBlip = async (blipData) => {
+    await nui.updateBlip(blipData);
+    setEditingBlip(null); // Exit editing mode
   };
 
   const handleDeleteBlip = async (blipId) => {
     await nui.deleteBlip(blipId);
   };
 
-  if (!visible) {
-    return null;
-  }
+  const handleEditBlip = (blip) => {
+    setEditingBlip(blip);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingBlip(null);
+  };
+
+  if (!visible) return null;
 
   return (
     <div className="app-wrapper">
@@ -81,12 +73,21 @@ function App() {
         </div>
         <div className="content-container">
           <div className="blip-creator-container">
-            <h2>Create New Blip</h2>
-            <BlipForm onCreate={handleCreateBlip} />
+            <h2>{editingBlip ? 'Edit Blip' : 'Create New Blip'}</h2>
+            <BlipForm
+              onCreate={handleCreateBlip}
+              onUpdate={handleUpdateBlip}
+              editingBlip={editingBlip}
+              onCancelEdit={handleCancelEdit}
+            />
           </div>
           <div className="blip-list-container">
             <h2>Existing Blips</h2>
-            <BlipList blips={blips} onDelete={handleDeleteBlip} />
+            <BlipList
+              blips={blips}
+              onEdit={handleEditBlip}
+              onDelete={handleDeleteBlip}
+            />
           </div>
         </div>
       </div>
