@@ -3,7 +3,7 @@
  */
 
 // The resource name must match the name of the resource folder.
-const resourceName = 'Blip';
+const resourceName = 'blips_creator';
 
 /**
  * A wrapper around fetch to make NUI callbacks.

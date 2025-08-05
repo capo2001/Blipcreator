@@ -75,7 +75,7 @@ function BlipForm({ onCreate, onUpdate, editingBlip, onCancelEdit }) {
         <input
           id="size" type="number" value={size}
           onChange={(e) => setSize(e.target.value)}
-          placeholder="e.g., 1.2" step="0.01" min="0.01" required
+          placeholder="e.g., 1.2" step="0.1" min="0.1" required
         />
       </div>
       <div className="form-buttons">
