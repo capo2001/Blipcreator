@@ -5,11 +5,20 @@ game 'gta5'
 
 author 'CAPO'
 description 'Blip Creator Free For QBCore and ESX'
-version '1.0'
+version '2.0'
 
-scriptname 'blips'
+ui_page 'web/index.html'
 
+files {
+    'web/index.html',
+    'web/css/style.css',
+    'web/js/script.js'
+}
 
+shared_scripts {
+    '@oxmysql/lib/MySQL.lua',
+    'config.lua'
+}
 
-shared_script 'config.lua'
-client_script 'blips.lua'
+server_script 'server.lua'
+client_script 'client.lua'
