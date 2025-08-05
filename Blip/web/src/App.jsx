@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import BlipForm from './BlipForm';
 import BlipList from './BlipList';
@@ -7,74 +7,97 @@ import { nui } from './nui';
 function App() {
   const [blips, setBlips] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [editingBlip, setEditingBlip] = useState(null);
 
-  // Main message listener for events from Lua
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setEditingBlip(null); // Clear editing state on close
+    nui.close();
+  }, []);
+
   useEffect(() => {
     const handleMessage = (event) => {
       const { action, data } = event.data;
-      switch (action) {
-        case 'setVisible':
-          setVisible(data);
-          break;
-        case 'updateBlips':
-          setBlips(data);
-          break;
-        default:
-          break;
-      }
+      if (action === 'setVisible') setVisible(data);
+      if (action === 'updateBlips') setBlips(Array.isArray(data) ? data : []);
     };
-
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  // Key listener for closing the UI
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setVisible(false);
-        nui.close();
-      }
+      if (e.key === 'Escape') handleClose();
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleClose]);
+
+  // Aggressively force transparent background
+  useEffect(() => {
+    const interval = setInterval(() => {
+      document.body.style.backgroundColor = 'transparent';
+    }, 100);
+    return () => clearInterval(interval);
   }, []);
 
-  // Fetch blips when the UI becomes visible
   useEffect(() => {
-    if (visible) {
+    if (visible && !editingBlip) { // Don't refetch if we just opened the editor
       nui.getBlips().then(initialBlips => {
-        if (initialBlips) {
-          setBlips(initialBlips);
-        }
+        if (Array.isArray(initialBlips)) setBlips(initialBlips);
       });
     }
-  }, [visible]);
+  }, [visible, editingBlip]);
 
   const handleCreateBlip = async (blipData) => {
-    // The server will refresh the blip list for all clients after creation
     await nui.createBlip(blipData);
   };
 
+  const handleUpdateBlip = async (blipData) => {
+    await nui.updateBlip(blipData);
+    setEditingBlip(null); // Exit editing mode
+  };
+
   const handleDeleteBlip = async (blipId) => {
-    // The server will refresh the blip list for all clients after deletion
     await nui.deleteBlip(blipId);
   };
 
-  if (!visible) {
-    return null;
-  }
+  const handleEditBlip = (blip) => {
+    setEditingBlip(blip);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingBlip(null);
+  };
+
+  if (!visible) return null;
 
   return (
-    <div className="app-container">
-      <div className="blip-creator-container">
-        <h1>Blip Creator</h1>
-        <BlipForm onCreate={handleCreateBlip} />
-      </div>
-      <div className="blip-list-container">
-        <h2>Existing Blips</h2>
-        <BlipList blips={blips} onDelete={handleDeleteBlip} />
+    <div className="app-wrapper">
+      <div className="glass-container">
+        <div className="header-container">
+          <h1>Blip Manager</h1>
+          <button onClick={handleClose} className="close-btn">X</button>
+        </div>
+        <div className="content-container">
+          <div className="blip-creator-container">
+            <h2>{editingBlip ? 'Edit Blip' : 'Create New Blip'}</h2>
+            <BlipForm
+              onCreate={handleCreateBlip}
+              onUpdate={handleUpdateBlip}
+              editingBlip={editingBlip}
+              onCancelEdit={handleCancelEdit}
+            />
+          </div>
+          <div className="blip-list-container">
+            <h2>Existing Blips</h2>
+            <BlipList
+              blips={blips}
+              onEdit={handleEditBlip}
+              onDelete={handleDeleteBlip}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
