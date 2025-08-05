@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import BlipForm from './BlipForm';
 import BlipList from './BlipList';
@@ -7,6 +7,11 @@ import { nui } from './nui';
 function App() {
   const [blips, setBlips] = useState([]);
   const [visible, setVisible] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    nui.close();
+  }, []);
 
   // Main message listener for events from Lua
   useEffect(() => {
@@ -32,14 +37,13 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        setVisible(false);
-        nui.close();
+        handleClose();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handleClose]);
 
   // Fetch blips when the UI becomes visible
   useEffect(() => {
@@ -53,12 +57,10 @@ function App() {
   }, [visible]);
 
   const handleCreateBlip = async (blipData) => {
-    // The server will refresh the blip list for all clients after creation
     await nui.createBlip(blipData);
   };
 
   const handleDeleteBlip = async (blipId) => {
-    // The server will refresh the blip list for all clients after deletion
     await nui.deleteBlip(blipId);
   };
 
@@ -67,14 +69,22 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <div className="blip-creator-container">
-        <h1>Blip Creator</h1>
-        <BlipForm onCreate={handleCreateBlip} />
-      </div>
-      <div className="blip-list-container">
-        <h2>Existing Blips</h2>
-        <BlipList blips={blips} onDelete={handleDeleteBlip} />
+    <div className="app-wrapper">
+      <div className="glass-container">
+        <div className="header-container">
+          <h1>Blip Manager</h1>
+          <button onClick={handleClose} className="close-btn">X</button>
+        </div>
+        <div className="content-container">
+          <div className="blip-creator-container">
+            <h2>Create New Blip</h2>
+            <BlipForm onCreate={handleCreateBlip} />
+          </div>
+          <div className="blip-list-container">
+            <h2>Existing Blips</h2>
+            <BlipList blips={blips} onDelete={handleDeleteBlip} />
+          </div>
+        </div>
       </div>
     </div>
   );

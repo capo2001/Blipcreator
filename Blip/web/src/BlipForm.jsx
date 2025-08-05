@@ -53,7 +53,7 @@ function BlipForm({ onCreate }) {
           required
         />
       </div>
-      <button type="submit">Create Blip</button>
+      <button type="submit" className="submit-btn">Create Blip</button>
     </form>
   );
 }
