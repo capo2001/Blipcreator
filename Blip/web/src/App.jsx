@@ -33,6 +33,14 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleClose]);
 
+  // Aggressively force transparent background
+  useEffect(() => {
+    const interval = setInterval(() => {
+      document.body.style.backgroundColor = 'transparent';
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (visible && !editingBlip) { // Don't refetch if we just opened the editor
       nui.getBlips().then(initialBlips => {
