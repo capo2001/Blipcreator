@@ -4,7 +4,7 @@
  */
 
 // The resource name must match the name of the resource folder.
-const resourceName = 'blips_creator';
+const resourceName = 'Blip';
 
 /**
  * A wrapper to make NUI callbacks using XMLHttpRequest.
