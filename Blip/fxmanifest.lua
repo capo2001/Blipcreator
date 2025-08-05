@@ -3,16 +3,15 @@ game 'gta5'
 
 -- 💬 Discord: capo_2001
 
-author 'CAPO'
-description 'Blip Creator Free For QBCore and ESX'
-version '2.0'
+author 'CAPO & Jules'
+description 'Blip Creator with React UI'
+version '3.0'
 
-ui_page 'web/index.html'
+ui_page 'web/build/index.html'
 
 files {
-    'web/index.html',
-    'web/css/style.css',
-    'web/js/script.js'
+    'web/build/index.html',
+    'web/build/**/*',
 }
 
 shared_scripts {
