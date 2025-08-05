@@ -30,7 +30,14 @@ function DrawBlips()
         local blip = AddBlipForCoord(blipInfo.x, blipInfo.y, blipInfo.z)
         SetBlipSprite(blip, blipInfo.sprite)
         SetBlipColour(blip, blipInfo.color)
-        SetBlipScale(blip, blipInfo.size) -- Set the blip size
+
+        -- Ensure size is a valid float, default to 1.0 if not
+        local scale = tonumber(blipInfo.size)
+        if not scale or scale <= 0 then
+            scale = 1.0
+        end
+        SetBlipScale(blip, scale) -- Set the blip size
+
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString(blipInfo.name)
