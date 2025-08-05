@@ -49,8 +49,12 @@ function App() {
   useEffect(() => {
     if (visible) {
       nui.getBlips().then(initialBlips => {
-        if (initialBlips) {
+        // Gracefully handle cases where the blip list isn't an array
+        if (Array.isArray(initialBlips)) {
           setBlips(initialBlips);
+        } else {
+          // You could optionally set an error state here
+          setBlips([]);
         }
       });
     }
